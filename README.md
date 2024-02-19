@@ -1,2 +1,1 @@
-# dbmigrationdata
-data for migration
+# primuslearning-db-migration
