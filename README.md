@@ -1,1 +1,1 @@
-# primuslearning-db-migration
+# db-migration
