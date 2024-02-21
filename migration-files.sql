@@ -85,12 +85,12 @@ CREATE TABLE Course (
 CourseID DECIMAL(12) NOT NULL PRIMARY KEY,
 UserID DECIMAL(12) NOT NULL,
 Course_type VARCHAR(54) NOT NULL,
-Credit DECIMAL(255) NULL,
+Credit DECIMAL(65) NULL,
 Status VARCHAR(24) NOT NULL,
 Department VARCHAR(24) NOT NULL,
 Grade VARCHAR(24) NULL,
 Catalog VARCHAR(54) NOT NULL,
-Units_taken DECIMAL(255) NULL,
+Units_taken DECIMAL(65) NULL,
 Grade_base VARCHAR(24) NULL,
 Class_nbr DECIMAL(12) NULL,
 FOREIGN KEY (UserID) REFERENCES User1(UserID)); 
@@ -160,14 +160,14 @@ BEGIN
  INSERT INTO User1(userid, first_name, last_name, phone, email, address, zip_code, city)
  VALUES(userid, first_name, last_name, phone, email, address, zip_code, city);
 END;
-$proc$ LANGUAGE plpgsql 
+$proc$ LANGUAGE plpgsql; 
 
 --Execute AddUser1
 
  START TRANSACTION;
 DO
  $$BEGIN
- EXECUTE AddUser1(1, 'John', 'Ngwa', 564-666-2945, 'johnngwa@gmail.com', '100 street Houston', 77771, 'Houston');
+ EXECUTE AddUser1(1,'John','Ngwa','564-666-2945','johnngwa@gmail.com','100 street Houston','77771','Houston');
  END$$;
 COMMIT TRANSACTION; 
 
@@ -184,14 +184,14 @@ BEGIN
  VALUES(Accountid, userid, account_type, created_date, description);
 
 END;
-$proc$ LANGUAGE plpgsql 
+$proc$ LANGUAGE plpgsql; 
 
 --Executing the procedure above
 
 START TRANSACTION;
 DO
  $$BEGIN
- EXECUTE AddAccount(101, 1, 'Student Account', CAST('01-JAN-2020' AS DATE), 'First Account for students');
+ EXECUTE AddAccount(101,1,'Student Account',CAST('01-JAN-2020' AS DATE),'First Account for students');
  END$$;
 COMMIT TRANSACTION; 
 
@@ -209,6 +209,7 @@ BEGIN
 
 END;
 $proc$ LANGUAGE plpgsql; 
+
 --Executing the procedure above
 
 START TRANSACTION;
@@ -216,7 +217,30 @@ DO
  $$BEGIN
  EXECUTE AddStudent(1, CAST('01-JAN-2020' AS DATE), 240-546-4444, 'ADTED', 'Admitted', 'UNGD', 'Jeseline@gmail.com');
  END$$;
-COMMIT TRANSACTION; 
+COMMIT TRANSACTION;
+
+--Add User 'Instructor' in stored procedure
+
+CREATE OR REPLACE FUNCTION AddInstructor(UserID IN DECIMAL, Office IN VARCHAR, Hire_date IN DATE, Role IN VARCHAR,
+Subject in VARCHAR, Phone IN DECIMAL, Extension IN DECIMAL)
+RETURNS VOID
+AS
+$proc$
+BEGIN
+ INSERT INTO Instructor(UserID, Office, Hire_date, Role, Subject, Phone, Extension)
+ VALUES(UserID, Office, Hire_date, Role, Subject, Phone, Extension);
+
+END;
+$proc$ LANGUAGE plpgsql; 
+
+--Executing the procedure above
+
+START TRANSACTION;
+DO
+ $$BEGIN
+ EXECUTE AddInstructor(1,'Tech Support',CAST('01-FEB-2020' AS DATE),'Learning','Human Resources','2611450189','6227195');
+ END$$;
+COMMIT TRANSACTION;
 
 
 --INSERT INTO TABLES
@@ -225,6 +249,7 @@ COMMIT TRANSACTION;
 
 INSERT INTO User1 (userid,first_name,last_name,phone,email,address,zip_code,city)
 VALUES 
+(1,'John','Ngwa','564-666-2945','johnngwa@gmail.com','100 street Houston','77771','Houston'),
 (2,'Madeline','Anthony','9876634538','ultrices@Maecenas.org','P.O. Box 118, 318 Nam Street','71706','Muzaffargarh'),
 (3,'Arthur','Matthew','8284590855','non@quisurnaNunc.co.uk','750-6872 Blandit St.','04119','Balfour'),
 (4,'Arthur','Aladdin','1751182653','lectus.rutrum.urna@vitae.com','481-9053 Nam St.','29254','Leticia'),
@@ -237,8 +262,10 @@ VALUES
 
 --account table
 
-INSERT INTO account (accountid,userid,account_type,created_date,description) 
-VALUES (102,2,'student', CAST('02-JAN-2020' AS DATE),'Owner of account is a student'),
+INSERT INTO Account (accountid,userid,account_type,created_date,description) 
+VALUES
+(101,1,'Student Account', CAST('01-JAN-2020' AS DATE),'First Account for students'),
+(102,2,'student', CAST('02-JAN-2020' AS DATE),'Owner of account is a student'),
 (103,3,'Administrator', CAST('03-JAN-2020' AS DATE),'The second account'),
 (104,4,'Instructor',CAST('04-JAN-2020' AS DATE),'third account'),
 (105,5,'student',CAST('05-JAN-2020' AS DATE),'Account creation type'),
@@ -250,7 +277,7 @@ VALUES (102,2,'student', CAST('02-JAN-2020' AS DATE),'Owner of account is a stud
 
 --student table
 
-INSERT INTO student (userid,date_admitted, term, Phone,acad_group,status,acad_plan,Email) 
+INSERT INTO Student (userid,date_admitted, term, Phone,acad_group,status,acad_plan,Email) 
 VALUES
 (2, CAST('11-JAN-2020' AS DATE),'ADTED',2698188961,'Admitted','UNGD','GCP', 'eu.arcu@parturientmontes.co.uk'),
 (3, CAST('12-JAN-2020' AS DATE),'ADTED',1592124061,'Admitted','UNGD','GCP','Suspendisse.ac.metus@orciinconsequat.net'),
@@ -264,7 +291,7 @@ VALUES
 
 --Instructor table
 
-INSERT INTO Instructor (userid,office,hire_date,role,subject,phone,extension) 
+INSERT INTO Instructor (UserID, Office, Hire_date, Role,Subject, Phone, Extension) 
 VALUES 
 (1,'Tech Support',CAST('01-FEB-2020' AS DATE),'Learning','Human Resources','2611450189','6227195'),
 (2,'Media Relations',CAST('02-FEB-2020' AS DATE),'Lecturer','Customer Service','7442141442','3439734'),
